@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Nunito Sans", sans-serif;
+}
+body {
+  background: var(--dark-bg, #101829);
+  color: #dfe8ef;
+}
+
+.icon-bg {
+  background: var(--dark-bg, #101829);
+}
+
+label {
+  font-size: 13px;
+}
+
+.text-color,
+.hover-text-color:hover {
+  color: #32d583;
+}
+
+.border-color {
+  border-color: #32d583;
+}
+
+.bg-button {
+  background-color: #24975d;
+}
+
+.bg-secondary {
+  background: #1e2a3a;
+}
+
+.table-head {
+  background: #101829;
+  color: white;
+}
+.bg-modal {
+  background: rgb(0, 0, 0, 0.8);
+}
+
+.table-container {
+  position: relative;
+  overflow-y: scroll;
+  max-height: calc(
+    100% - 2.5rem
+  ); /* Subtract the height of pagination or other elements if applicable */
+}
+
+.css-t3ipsp-control:hover {
+  border-color: #1e2a3a !important;
+}
+
+.bg-select,
+.css-13cymwt-control,
+.css-13cymwt-control,
+.css-1nmdiq5-menu,
+.css-t3ipsp-control {
+  background-color: #1e2a3a !important;
+}
+
+.css-1nmdiq5-menu:hover,
+.react-select__menu-list:hover {
+  background-color: none;
+}
+
+input,
+select {
+  background: transparent;
+  border-color: white;
+  color: white;
+}
+
+.table-container::-webkit-scrollbar,
+.notification-container::-webkit-scrollbar,
+#component::-webkit-scrollbar {
+  width: 0px;
+  display: none; /* Width of the scrollbar */
+}
+.custom-input::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* This will change the color of the icon */
+}
+
+
+.text-break{
+  text-wrap: wrap  !important;
+  /* width: 100px !important; */
+}

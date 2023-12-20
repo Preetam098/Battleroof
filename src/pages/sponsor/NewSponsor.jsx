@@ -1,0 +1,152 @@
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import SimpleReactValidator from "simple-react-validator";
+import { MdClose, MdOutlineCloudUpload } from "react-icons/md";
+
+import ButtonLoader from "../../components/ButtonLoader";
+import ShowError from "../../components/ShowError";
+import { addSponsor, updateSponsor } from "../../redux/actions/sponsorAction";
+
+const NewSponsor = ({ handleCloseModal, imageUrl, editData }) => {
+  const dispatch = useDispatch();
+  const [errors, setErrors] = useState({});
+  const [preview, setPreview] = useState();
+  const [isEdit, setIsEdit] = useState(false);
+  const [formInput, setFormInput] = useState({ ...editData });
+  const { loading } = useSelector((state) => state.sponsorReducer);
+  const validator = new SimpleReactValidator({
+    className: "text-danger",
+    validators: {
+      fileSize: {
+        message: "The :attribute must be max 1MB.",
+        rule: function (val, maxSize, validator) {
+          return val && val.size <= 1048576;
+        },
+      },
+    },
+  });
+
+  // handle Change
+  const handleChange = (event) => {
+    const { name, type, value } = event.target;
+    setIsEdit(true);
+    setErrors({ ...errors, [name]: "" });
+    if (type === "file") {
+      setPreview(URL.createObjectURL(event.target.files[0]));
+      setFormInput({ ...formInput, [name]: event.target.files[0] });
+    } else {
+      setFormInput({ ...formInput, [name]: value });
+    }
+  };
+
+  // Handle Submit
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const payload = new FormData();
+    Object.keys(formInput).map((item) => {
+      return payload.append(item, formInput[item]);
+    });
+
+    if (validator.allValid()) {
+      if (editData) {
+        if (isEdit) {
+          dispatch(updateSponsor(editData._id, payload, handleCloseModal));
+        } else {
+          handleCloseModal();
+        }
+      } else {
+        dispatch(addSponsor(payload, handleCloseModal));
+      }
+    } else {
+      validator.showMessages();
+      setErrors(validator.errorMessages);
+    }
+  };
+
+  return (
+    <div className="tracking-wider overflow-hidden absolute z-50 top-0 flex justify-end left-0 w-full h-screen bg-modal">
+      <div className="w-96 pb-10 md:w-2/3 h-full overflow-auto xl:w-2/5 p-4 bg-secondary shadow-xl">
+        {/* Top */}
+        <div className="flex justify-between items-center">
+          <span className="text-color">
+            {editData ? "Update" : "Add"} Sponsor
+          </span>
+          <MdClose
+            className="text-xl cursor-pointer"
+            onClick={handleCloseModal}
+          />
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-5 grid gap-3">
+          {/* Name & Ad Reward */}
+          <div className="grid gap-1">
+            <label htmlFor="name" className="text-sm">
+              Link*
+            </label>
+            <input
+              autoComplete="off"
+              id="link"
+              type="text"
+              name="link"
+              value={formInput?.link}
+              onChange={handleChange}
+              className="rounded py-1.5 px-2 outline-none border"
+            />
+            {validator.message("link", formInput?.link, "required")}
+            <ShowError data={errors.link} />
+          </div>
+
+          {/* Image */}
+          <div className="grid gap-1">
+            <label className="text-sm">Image*</label>
+            <div>
+              <label
+                htmlFor="images"
+                className="text-xs flex flex-col gap-1 justify-center rounded border-dashed border-[1.5px] p-6 items-center"
+              >
+                {formInput?.image?.name && (
+                  <img
+                    src={
+                      editData && !preview
+                        ? `${imageUrl}${editData?.image}`
+                        : preview
+                    }
+                    alt="preview"
+                    className="max-w-[170px] rounded"
+                  />
+                )}
+
+                <MdOutlineCloudUpload className="text-xl mb-0.5" />
+                {formInput?.image?.name
+                  ? formInput?.image?.name
+                  : " Upload Image"}
+              </label>
+              <input
+                autoComplete="off"
+                id="images"
+                type="file"
+                name="image"
+                accept="image/jpeg"
+                onChange={handleChange}
+                className="rounded py-1.5 px-2 hidden outline-none border"
+              />
+            </div>
+            {validator.message("image", formInput?.image, "required|fileSize")}
+            <ShowError data={errors.image} />
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            loading={loading}
+            className="bg-button justify-center flex items-center cursor-pointer tracking-wider py-2 px-4 mt-2 rounded text-white"
+          >
+            {loading ? <ButtonLoader /> : "Submit"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default NewSponsor;
